@@ -32,7 +32,7 @@ npm manifest:
     "version": "1.0.0",
     "description": "This is our relatime pizza app",
     "main": "index.js",
-    "author": "Coder's Gyan",
+    "author": "Kunal Kharat",
     "scripts": {
       "serve": "node server.js",
       "dev": "nodemon server.js",
