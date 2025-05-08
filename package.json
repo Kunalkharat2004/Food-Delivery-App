@@ -19,6 +19,7 @@
     "bcrypt": "^5.0.0",
     "cloudinary": "^1.41.3",
     "connect-mongo": "^3.2.0",
+    "cors": "^2.8.5",
     "cross-env": "^7.0.2",
     "dotenv": "^8.6.0",
     "ejs": "^3.1.3",

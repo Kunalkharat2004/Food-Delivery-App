@@ -1,28 +1,31 @@
+require("dotenv").config();
 const mongoose = require("mongoose");
-const Menu = require("./models/menu");
 const User = require("./models/user");
 const bcrypt = require("bcrypt");
-const fs = require("fs");
-const path = require("path");
 
-// Load menu data from menus.json
-const loadMenuData = async () => {
+// Connect to MongoDB
+const connectDB = async () => {
   try {
-    // Check if collection has data
-    const menuCount = await Menu.countDocuments();
-    if (menuCount > 0) {
-      console.log("Menu data already exists in database");
-    } else {
-      // Read menus.json file
-      const menuData = JSON.parse(
-        fs.readFileSync(path.join(__dirname, "../menus.json"), "utf-8")
-      );
-
-      // Insert menu data
-      const insertResult = await Menu.insertMany(menuData);
-      console.log(`${insertResult.length} menu items imported successfully`);
+    if (!process.env.MONGO_URI) {
+      throw new Error("MONGO_URI is not defined in environment variables");
     }
 
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
+    console.log("MongoDB connected successfully");
+  } catch (error) {
+    console.error("MongoDB connection error:", error.message);
+    throw error;
+  }
+};
+
+// Function to create admin user
+const createAdminUser = async () => {
+  try {
     // Create admin user if doesn't exist
     const adminExists = await User.findOne({ email: "admin@pizza.com" });
     if (!adminExists) {
@@ -36,10 +39,25 @@ const loadMenuData = async () => {
       });
       await admin.save();
       console.log("Admin user created successfully");
+    } else {
+      console.log("Admin user already exists");
     }
   } catch (error) {
-    console.error("Error seeding data:", error);
+    console.error("Error creating admin user:", error);
+    throw error;
   }
 };
 
-module.exports = loadMenuData;
+// Initialize database
+const init = async () => {
+  try {
+    await connectDB();
+    await createAdminUser();
+    console.log("Database initialization completed");
+  } catch (error) {
+    console.error("Initialization error:", error);
+    throw error;
+  }
+};
+
+module.exports = init;
