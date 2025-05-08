@@ -1,0 +1,27 @@
+<section class="create-category container mx-auto py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-xl font-bold">Create Category</h1>
+        <a href="/admin/categories" class="btn-primary px-4 py-2 rounded-full text-white">Back to List</a>
+    </div>
+
+    <% if(messages.error) { %>
+    <div class="alert error mb-4 p-4 bg-red-100 text-red-700 rounded">
+        <%= messages.error %>
+    </div>
+    <% } %>
+
+    <div class="bg-white shadow-md rounded-lg overflow-hidden p-6">
+        <form action="/admin/categories" method="POST">
+            <div class="mb-4">
+                <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Category Name</label>
+                <input type="text" id="name" name="name" required
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    placeholder="Enter category name">
+            </div>
+            <div class="flex items-center justify-between">
+                <button type="submit"
+                    class="btn-primary px-4 py-2 rounded-full text-white">Save</button>
+            </div>
+        </form>
+    </div>
+</section> 

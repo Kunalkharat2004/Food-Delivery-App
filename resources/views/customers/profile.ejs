@@ -1,0 +1,126 @@
+<section class="profile py-16 bg-gray-50 min-h-screen">
+    <div class="container mx-auto xl:w-1/2">
+        <div class="bg-white shadow-2xl rounded-2xl p-8 border-t-8 border-orange-500">
+            <div class="flex flex-col items-center mb-8">
+                <div class="w-32 h-32 mb-4 relative">
+                    <img src="<%= user.profileImage %>" alt="Profile" class="w-full h-full object-cover rounded-full border-4 border-orange-400 shadow-lg">
+                </div>
+                <h1 class="text-3xl font-extrabold text-gray-800 mb-1 tracking-tight"><%= user.name %></h1>
+                <p class="text-gray-500 text-lg">Customer Profile</p>
+            </div>
+
+            <form id="profileForm" action="/customer/profile/update" method="POST" enctype="multipart/form-data" class="mb-10">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Name</label>
+                        <input type="text" name="name" value="<%= user.name %>" required
+                            class="shadow-md border border-gray-300 rounded-lg w-full py-2 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-400 transition">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                        <input type="email" value="<%= user.email %>" disabled
+                            class="shadow-md border border-gray-200 rounded-lg w-full py-2 px-4 text-gray-400 bg-gray-100 cursor-not-allowed">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Phone</label>
+                        <input type="tel" name="phone" value="<%= user.phone || '' %>"
+                            class="shadow-md border border-gray-300 rounded-lg w-full py-2 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-400 transition"
+                            placeholder="Enter your phone number">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Address</label>
+                        <input type="text" name="address" value="<%= user.address || '' %>"
+                            class="shadow-md border border-gray-300 rounded-lg w-full py-2 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-400 transition"
+                            placeholder="Enter your address">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Profile Image</label>
+                        <div class="flex items-center">
+                            <label class="w-64 flex flex-col items-center px-4 py-6 bg-white text-orange-500 rounded-lg shadow-lg tracking-wide uppercase border border-orange-400 cursor-pointer hover:bg-orange-500 hover:text-white transition">
+                                <svg class="w-8 h-8" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+                                </svg>
+                                <span class="mt-2 text-base leading-normal">Select a file</span>
+                                <input type='file' name="profileImage" accept="image/*" class="hidden" />
+                            </label>
+                            <span id="file-chosen" class="ml-3 text-sm text-gray-600">No file chosen</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-center mt-8">
+                    <button type="submit" id="updateBtn" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-8 rounded-full shadow-lg transition-all duration-200 flex items-center">
+                        <span>Update Profile</span>
+                        <div id="btnLoader" class="hidden ml-2">
+                            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </div>
+                    </button>
+                </div>
+            </form>
+
+            <div class="border-t pt-8 mt-8">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800 flex items-center"><i class="las la-wallet mr-2 text-orange-500 text-3xl"></i> Wallet Balance</h2>
+                <div class="bg-gradient-to-r from-orange-100 to-orange-200 p-6 rounded-xl mb-6 flex items-center justify-between shadow-inner">
+                    <p class="text-3xl font-extrabold text-orange-600">₹<%= user.balance %></p>
+                </div>
+                <form id="balanceForm" action="/customer/profile/balance" method="POST" class="flex flex-col md:flex-row items-end gap-4">
+                    <div class="flex-1">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Add Balance</label>
+                        <input type="number" name="amount" min="1" step="1" required
+                            class="shadow-md border border-gray-300 rounded-lg w-full py-2 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-400 transition"
+                            placeholder="Enter amount">
+                    </div>
+                    <button type="submit" id="addMoneyBtn" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-8 rounded-full shadow-lg transition-all duration-200 flex items-center">
+                        <span>Add Money</span>
+                        <div id="balanceBtnLoader" class="hidden ml-2">
+                            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </div>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Image preview
+    const fileInput = document.querySelector('input[type="file"]');
+    const fileChosen = document.getElementById('file-chosen');
+    if(fileInput) {
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                fileChosen.textContent = file.name;
+            } else {
+                fileChosen.textContent = 'No file chosen';
+            }
+        });
+    }
+
+    // Show loading indicators
+    document.getElementById('profileForm').addEventListener('submit', function() {
+        document.getElementById('btnLoader').classList.remove('hidden');
+        document.getElementById('updateBtn').disabled = true;
+        document.getElementById('updateBtn').classList.add('opacity-75');
+    });
+
+    document.getElementById('balanceForm').addEventListener('submit', function() {
+        document.getElementById('balanceBtnLoader').classList.remove('hidden');
+        document.getElementById('addMoneyBtn').disabled = true;
+        document.getElementById('addMoneyBtn').classList.add('opacity-75');
+    });
+
+    // Initialize profile values
+    document.addEventListener('DOMContentLoaded', function() {
+        // Console log values to verify they're present
+        console.log("Phone value:", <%= user.phone ? `"${user.phone}"` : 'null' %>);
+        console.log("Address value:", <%= user.address ? `"${user.address}"` : 'null' %>);
+    });
+</script>
+
+<%- include('../partials/footer') %> 

@@ -1,0 +1,122 @@
+<section class="edit-product container mx-auto py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-xl font-bold">Edit Product</h1>
+        <a href="/admin/products" class="btn-primary px-4 py-2 rounded-full text-white">Back to List</a>
+    </div>
+
+    <% if(messages.error) { %>
+    <div class="alert error mb-4 p-4 bg-red-100 text-red-700 rounded">
+        <%= messages.error %>
+    </div>
+    <% } %>
+
+    <div class="bg-white shadow-md rounded-lg overflow-hidden p-6">
+        <form action="/admin/products/update/<%= product._id %>" method="POST" enctype="multipart/form-data">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="mb-4">
+                    <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Product Name</label>
+                    <input type="text" id="name" name="name" required
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        placeholder="Enter product name" value="<%= product.name %>">
+                </div>
+
+                <div class="mb-4">
+                    <label for="category" class="block text-gray-700 text-sm font-bold mb-2">Category</label>
+                    <select id="category" name="category" required
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="">Select a category</option>
+                        <% categories.forEach(function(category) { %>
+                            <option value="<%= category._id %>" <%= (product.category.toString() === category._id.toString()) ? 'selected' : '' %>><%= category.name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="price" class="block text-gray-700 text-sm font-bold mb-2">Price</label>
+                    <input type="number" id="price" name="price" min="0" step="0.01" required
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        placeholder="Enter price" value="<%= product.price %>">
+                </div>
+
+                <div class="mb-4">
+                    <label for="size" class="block text-gray-700 text-sm font-bold mb-2">Size</label>
+                    <select id="size" name="size" required
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="">Select a size</option>
+                        <option value="small" <%= product.size === 'small' ? 'selected' : '' %>>Small</option>
+                        <option value="medium" <%= product.size === 'medium' ? 'selected' : '' %>>Medium</option>
+                        <option value="large" <%= product.size === 'large' ? 'selected' : '' %>>Large</option>
+                    </select>
+                </div>
+
+                <div class="mb-4 col-span-2">
+                    <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Description</label>
+                    <textarea id="description" name="description" rows="3"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        placeholder="Enter product description"><%= product.description %></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="flex items-center">
+                        <input type="checkbox" name="isAvailable" class="form-checkbox h-5 w-5 text-green-600" <%= product.isAvailable ? 'checked' : '' %>>
+                        <span class="ml-2 text-gray-700">Available for ordering</span>
+                    </label>
+                </div>
+
+                <div class="mb-4 col-span-2">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Current Image</label>
+                    <div class="mt-2">
+                        <img src="<%= product.image %>" alt="<%= product.name %>" class="h-40 rounded">
+                    </div>
+                </div>
+
+                <div class="mb-4 col-span-2">
+                    <label for="image" class="block text-gray-700 text-sm font-bold mb-2">Change Image (Optional)</label>
+                    <div class="flex items-center">
+                        <label class="w-64 flex flex-col items-center px-4 py-6 bg-white text-blue-500 rounded-lg shadow-lg tracking-wide uppercase border border-blue-500 cursor-pointer hover:bg-blue-500 hover:text-white">
+                            <svg class="w-8 h-8" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+                            </svg>
+                            <span class="mt-2 text-base leading-normal">Select a file</span>
+                            <input type='file' id="image" name="image" accept="image/*" class="hidden" />
+                        </label>
+                        <span id="file-chosen" class="ml-3 text-sm text-gray-600">No file chosen</span>
+                    </div>
+                    <div id="image-preview" class="mt-3 hidden">
+                        <img src="" alt="Image Preview" class="max-h-40 rounded">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between mt-6">
+                <button type="submit"
+                    class="btn-primary px-4 py-2 rounded-full text-white">Update Product</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<script>
+    // Image preview
+    const fileInput = document.getElementById('image');
+    const fileChosen = document.getElementById('file-chosen');
+    const imagePreview = document.getElementById('image-preview');
+    const previewImg = imagePreview.querySelector('img');
+    
+    fileInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const file = this.files[0];
+            fileChosen.textContent = file.name;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                imagePreview.classList.remove('hidden');
+            }
+            reader.readAsDataURL(file);
+        } else {
+            fileChosen.textContent = 'No file chosen';
+            imagePreview.classList.add('hidden');
+        }
+    });
+</script> 
